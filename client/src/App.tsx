@@ -189,6 +189,36 @@ const handleAddEmployee = async (
     )
   }
 }
+ 
+
+const handleDeleteEmployee = async (id: string) => {
+  const confirmed = window.confirm(
+    'Are you sure you want to delete this employee?'
+  )
+
+  if (!confirmed) return
+
+  try {
+    await axios.delete(
+      `http://localhost:5000/api/employees/${id}`
+    )
+
+    setEmployees((prev) =>
+      prev.filter((employee) => employee._id !== id)
+    )
+
+    setNotice('Employee deleted successfully!')
+  } catch (error) {
+    console.error('Failed to delete employee:', error)
+
+    setNotice(
+      axios.isAxiosError(error)
+        ? JSON.stringify(error.response?.data ?? error.message)
+        : String(error)
+    )
+  }
+}
+
 
   const filteredEmployees = useMemo(() => {
     const query = search.toLowerCase().trim()
@@ -504,6 +534,8 @@ const handleAddEmployee = async (
 <td className="px-5 py-4">
   <button
     onClick={() => {
+
+      setEditingEmployeeId(employee._id)
       setNewEmployee({
         employeeId: employee.employeeId,
         firstName: employee.firstName,
